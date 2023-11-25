@@ -1,4 +1,6 @@
 from manim import *
+from manim.utils.space_ops import spherical_to_cartesian
+
 
 class SphericalCapVolume(ThreeDScene):
     def construct(self):
