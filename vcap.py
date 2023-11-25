@@ -6,13 +6,15 @@ class SphericalCapVolume(Scene):
         sphere_radius = 2
         cap_height = ValueTracker(1)
 
-        # Sphere and cap
+        # Sphere
         sphere = Sphere(radius=sphere_radius, resolution=(101, 51)).set_opacity(0.5)
+        
+        # Cap - a cut portion of the sphere
         cap = always_redraw(lambda: 
-            Hemisphere(radius=sphere_radius, resolution=(101, 51))
-            .set_height(cap_height.get_value(), stretch=True)
-            .move_to(sphere.get_top(), DOWN)
-            .set_color(BLUE)
+            Intersection(
+                Sphere(radius=sphere_radius, resolution=(101, 51)),
+                Cube(side_length=2 * sphere_radius).shift(UP * (sphere_radius - cap_height.get_value() / 2)),
+            ).set_color(BLUE).set_opacity(0.75)
         )
 
         # Volume formula text
