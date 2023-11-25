@@ -1,49 +1,85 @@
 from manim import *
 
-class SCV(ThreeDScene):
+class SphericalCapVolumeProof(Scene):
     def construct(self):
-        # Parameters for the sphere and the spherical cap
-        R = 3  # Radius of the sphere
-        h = 1  # Height of the cap
-        a = (2 * R * h - h**2)**0.5  # Radius of the base of the cap
-        
-        # Create a sphere
-        sphere = Sphere(radius=R, resolution=(30, 30))
-        sphere.set_opacity(0.5)
-        
-        # Create a plane to cut the sphere
-        plane = Rectangle(width=2*a, height=2*a)
-        plane.set_stroke(width=0)
-        plane.set_fill(color=BLUE, opacity=0.5)
-        plane.move_to(h * UP)
+        # Introduce the sphere and spherical cap
+        sphere_radius = 3
+        cap_height = 2
+        cap_radius = self.calculate_cap_radius(sphere_radius, cap_height)
 
-        # Create the spherical cap
-        cap = Hemisphere(radius=R)
-        cap.set_opacity(0.5)
-        cap.set_fill(color=RED, opacity=0.5)
-        cap.move_to((R-h) * UP)
+        # Texts for introduction
+        intro_texts = [
+            Tex("Consider a sphere of radius $R$"),
+            Tex("and a spherical cap with height $h$"),
+            Tex("We want to prove the volume of the spherical cap is"),
+            Tex("$V = \\frac{1}{3} \\pi h^2 (3R - h)$"),
+        ]
 
-        # Create labels for height (h), radius (R), and angle (theta)
-        h_label = MathTex("h").next_to(cap, UP)
-        R_label = MathTex("R").next_to(sphere, RIGHT)
-        theta_label = MathTex("\\theta").move_to(R/2 * DOWN + R/2 * RIGHT)
+        # Display introduction texts
+        for text in intro_texts:
+            self.play(Write(text))
+            self.wait(1)
+            self.play(FadeOut(text))
 
-        # Add the volume calculation text
-        volume_formula = MathTex(
-            "V = \\frac{1}{3}", "\\pi h^2", "(3R - h)"
-        ).to_corner(UL).set_color_by_tex("h", YELLOW)
+        # Show the relation V_cap = V_cyl - V_cone
+        relation_text = Tex(
+            "$V_{\\text{cap}} = V_{\\text{cyl}} - V_{\\text{cone}}$"
+        ).shift(UP * 3)
 
-        # Volume of the spherical cap
-        volume_value = (1/3) * PI * h**2 * (3*R - h)
-        volume_text = Text(f"Volume: {volume_value:.2f} cubic units", font_size=36).next_to(volume_formula, DOWN)
-        
-        # Add everything to the scene
-        self.add_fixed_in_frame_mobjects(volume_formula, volume_text)
-        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.1)
-        self.add(sphere)
-        self.play(FadeIn(plane))
-        self.play(Transform(plane, cap))
-        self.add_fixed_in_frame_mobjects(h_label, R_label, theta_label)
+        self.play(Write(relation_text))
+
+        # Representations of the cylinder and cone
+        cylinder = Cylinder(radius=cap_radius, height=cap_height)
+        cone = Cone(radius=cap_radius, height=cap_height)
+
+        # Display cylinder and cone
+        self.play(FadeIn(cylinder))
+        self.wait(1)
+        self.play(Transform(cylinder, cone))
+        self.wait(1)
+
+        # Show the actual formula derivation
+        derivation_text = MathTex(
+            "V_{\\text{cyl}}", "=", "\\pi", "a^2", "h",
+            "\\quad\\text{and}\\quad",
+            "V_{\\text{cone}}", "=", "\\frac{1}{3}", "\\pi", "a^2", "h"
+        ).shift(UP * 2)
+
+        self.play(Write(derivation_text))
         self.wait(2)
+
+        # Show the radius of the cap base (a) in terms of sphere's radius (R) and cap's height (h)
+        a_formula = MathTex(
+            "a", "=", "\\sqrt{h(2R-h)}"
+        ).next_to(derivation_text, DOWN)
+
+        self.play(Write(a_formula))
+        self.wait(2)
+
+        # Combine everything to show the final formula
+        final_formula = MathTex(
+            "V_{\\text{cap}}", "=", "\\pi a^2 h - \\frac{1}{3} \\pi a^2 h",
+            "=", "\\frac{2}{3} \\pi a^2 h"
+        ).next_to(a_formula, DOWN)
+
+        self.play(Write(final_formula))
+        self.wait(2)
+
+        # Replace a^2 with h(2R-h)
+        final_formula_with_a_substituted = MathTex(
+            "V_{\\text{cap}}", "=", "\\frac{2}{3} \\pi", "h(2R-h)", "h",
+            "=", "\\frac{1}{3} \\pi h^2 (3R - h)"
+        ).next_to(final_formula, DOWN)
+
+        self.play(Transform(final_formula, final_formula_with_a_substituted))
+        self.wait(2)
+
+        # Conclude
+        conclude_text = Tex("Hence proved!").shift(DOWN * 3)
+        self.play(Write(conclude_text))
+        self.wait(2)
+
+    def calculate_cap_radius(self, sphere_radius, cap_height):
+        return (cap_height * (2 * sphere_radius - cap_height))**0.5
+
 
