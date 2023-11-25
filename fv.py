@@ -39,5 +39,5 @@ class S(ThreeDScene):
         # Camera settings
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
 
-scene = SphericalCupIllustration()
+scene = S()
 scene.render()
