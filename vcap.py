@@ -39,3 +39,4 @@ class SphericalCapVolume(ThreeDScene):
         # Clear the scene
         self.play(FadeOut(sphere), FadeOut(cap), FadeOut(volume_text), FadeOut(volume_formula_crater))
         self.wait(2)
+
