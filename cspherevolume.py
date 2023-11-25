@@ -1,6 +1,6 @@
 from manim import *
 
-class SphericalCapVolume(ThreeDScene):
+class SCV(ThreeDScene):
     def construct(self):
         # Parameters for the sphere and the spherical cap
         R = 3  # Radius of the sphere
